@@ -71,7 +71,7 @@ species_attr <- eur_spp_full %>%
   group_by(AphiaID) %>%
   do(get_worms_fgrp(AphiaID = .$AphiaID))
 ```
-Count the number of species within each function group for each life stage ####
+Count the number of species within each function group for each life stage:
 ```R
 count(species_attr, adult)
 # adult     n
@@ -464,7 +464,7 @@ fao_eur <- aggregate(fao_eur, dissolve = TRUE)
 # plot if required
 plot(fao_eur)
 ```
-Set up a raster based on EMODNet 'europe' extent. For now set resolution = 0.5; could refine to 0.1 if needed
+Set up a raster based on EMODNet 'europe' extent (45W-70E, 26N-90N). For now set resolution = 0.5; could refine to 0.1 if needed
 ```R
 eur_r <- raster(extent(c(-45, 70, 26, 90)),
   resolution = 0.5, crs = crs("+proj=longlat +datum=WGS84"))
