@@ -527,4 +527,26 @@ spp_t_matched <- spp_t_matched %>%
     )) %>%
   filter(fg != "NA")
 ```
-
+Now you can get the average temperature affinity of any given grid square, separately for the different functional groups, using the `get_cell_t_affin` function in the `R` folder. For cells with no species in this returns an empty tibble, e.g.:
+```R
+# empty example:
+get_cell_t_affin(cell_geom = slice(eur_sf, 1)$geometry,
+  c_id = 1, t_dat = spp_t_matched)
+```
+For cells with species from one or more functional groups, you get a tibble with a row for each functional group, which contains some summary information (`cell_id` to identify the grid square, functional group as `fg`, the number of species of that group within the cell `n_sp`, the total number of OBIS records in the cell for that group `n_rec`, and then a range of assemblage-level temperature affinity summaries. For a working example:
+```R
+# working example:
+get_cell_t_affin(cell_geom = slice(eur_sf, 12000)$geometry,
+  c_id = 12000, t_dat = spp_t_matched)
+```
+This can be run over multiple grid cells like this:
+```R
+# test over a few cells
+test_cell_affins <- sample_n(eur_sf, 10) %>% group_by(cell_id) %>%
+  do(get_cell_t_affin(cell_geom = .$geometry, c_id = .$cell_id))
+```
+To run over all the grid cells in our European data takes around 30 mins to run:
+```R
+t_affin_grid <- eur_sf %>% group_by(cell_id) %>%
+  do(get_cell_t_affin(cell_geom = .$geometry, c_id = .$cell_id))
+```
