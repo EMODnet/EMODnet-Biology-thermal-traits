@@ -16,7 +16,7 @@ eur_spp <- checklist(
   geometry = "POLYGON((-45 26,-45 90,70 90,70 26,-45 26))", year = 2000:2018,
   fields = c("species", "records", "worms_id", "obisid", "rank_name"))
 ```
-This is a large query, so the results are provided in the `data` folder here as a csv file that can be read in directly:
+This is a large query, so the results are provided here as a csv file that can be read in directly:
 ```R
 eur_spp <- read_csv("eur_spp.csv")
 # get rid of excess column and restrict to species
@@ -38,7 +38,7 @@ where ST_Within(geom, 'POLYGON((-45 26,-45 90,70 90,70 26,-45 26))'::geography::
 group by p.tname, p.worms_id, rt.rank_name, p.species, st.worms_id
 order by count(*) desc
 ```
-This is also available as a csv file in the `data` folder:
+This is also available as a csv file:
 ```R
 eur_spp_full <- read_csv2("checklist_europe.csv")
 # restrict to species or below only
