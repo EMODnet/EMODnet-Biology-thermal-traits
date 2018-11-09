@@ -645,7 +645,8 @@ do_gridded_t_affin_plot(fgrp = "benthos", tvar = "bo_sbt_mean", mapdat = eur_dat
 ```
 This map is found in `bo_sbt_mean benthos.png`. Any combination of functional group and temperature variable available in `t_affin_grid` can be entered into the function. In addition, you can map the difference between functional group-level temperature affinity and one of the environmental temperature layers obtained from Bio-ORACLE. For instance to plot the difference between mean zooplankton thermal affinity based on mean SST, and expected max SST in 2050 under RCP 8.5:
 ```R
-do_gridded_t_affin_plot(fgrp = "zooplankton", tvar = c("bo_sst_mean", "bo_sst_max_rcp85_2050"))
+do_gridded_t_affin_plot(fgrp = "zooplankton", tvar = c("bo_sst_mean", "bo_sst_max_rcp85_2050"),
+  mapdat = eur_dat)
 ```
 This produces the map in `bo_sst_mean-bo_sst_max_rcp85_2050 zooplankton.png`. You can also do some basic QC by plotting, for instance, number of species per grid square for a given group, to see if extreme temperature affinity values can be explained by a lack of data. For instance for phytoplankton:
 ```R
