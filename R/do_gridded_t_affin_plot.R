@@ -102,5 +102,6 @@ do_gridded_t_affin_plot <- function(fgrp,
   # print and/or save plot if requested
   if(print_plot == TRUE){print(t_plot)}
   if(save_plot == TRUE){
+    plot_tit <- plot_tit %>% str_replace_all(c(" ", ","), "")
     ggsave(filename = paste0(plot_tit, ".png"), plot = t_plot)}	
 }
