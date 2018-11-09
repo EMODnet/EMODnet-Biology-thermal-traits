@@ -545,8 +545,98 @@ This can be run over multiple grid cells like this:
 test_cell_affins <- sample_n(eur_sf, 10) %>% group_by(cell_id) %>%
   do(get_cell_t_affin(cell_geom = .$geometry, c_id = .$cell_id))
 ```
-To run over all the grid cells in our European data takes around 30 mins to run:
+To run over all the grid cells in our European data takes approx 30-45 mins to run:
 ```R
 t_affin_grid <- eur_sf %>% group_by(cell_id) %>%
   do(get_cell_t_affin(cell_geom = .$geometry, c_id = .$cell_id))
 ```
+Alternatively you can read in the ouput directly as a csv provided here:
+```R
+t_affin_grid <- read_csv("t_affin_by_grid_fg.csv")
+```
+Tidy up and summarise a bit, to give number and proportion of grid cells each functional group occurs in, as well as median and maximum number of species and occurrence records per cell:
+```R
+t_affin_grid %>% ungroup %>% group_by(fg) %>% summarise(
+  n_cell = n(), p_cell = round(n()/14777, 2),
+  med_n_sp = median(n_sp), max_n_sp = max(n_sp),
+  med_n_rec = median(n_rec), max_n_rec = max(n_rec)
+)
+
+# >   fg            n_cell p_cell med_n_sp max_n_sp med_n_rec max_n_rec
+# >   <chr>          <int>  <dbl>    <dbl>    <dbl>     <dbl>     <dbl>
+# > 1 benthos         2182   0.15        3      984       9       35077
+# > 2 birds            948   0.06        3       66      16       19977
+# > 3 fish            2486   0.17        3      212      25       25174
+# > 4 macroalgae      2161   0.15        3      182       5        4952
+# > 5 mammals         1377   0.09        1       16       3         939
+# > 6 nekton           799   0.05        2       40       9         591
+# > 7 phytoplankton   2224   0.15        3      182       4        9735
+# > 8 reptiles         410   0.03        1        3       3         189
+# > 9 zooplankton     3950   0.27        4      241       8.5      5267
+```
+# Match gridded temperature affinities to current and future temperature
+The next step is to compare the gridded, functional group-level temperature affinities to current and projected future temperature. To do this we use [`sdmpredictors`](https://github.com/lifewatch/sdmpredictors) to access current and future temperature data from [Bio-ORACLE](http://www.bio-oracle.org). First, load `sdmpredictors` and download required temperature layers to a sensible directory (here, a folder called `biooracle` is created within your current working directory):
+```R
+library(sdmpredictors)
+# set path to store layers
+bo_path <- paste0(file.path(getwd()), "/biooracle")
+# create directory if needed
+if(!dir.exists(file.path(bo_path))){
+  dir.create(path = file.path(bo_path),
+    recursive = FALSE, showWarnings = FALSE)}
+```
+The temperature layers downloaded here are mean and max SST and SBT, both current and future scenarios - here the only future scenario downloaded is RCP8.5, for 2050, but other RCP scenarios can be loaded in the same way, as can projections to 2100:
+```R
+bo_t_dat <- load_layers(layercodes = c(
+  "BO_sstmean", "BO_sstmax",
+  "BO2_RCP85_2050_tempmean_ss", "BO2_RCP85_2050_tempmax_ss",
+  "BO2_tempmean_bdmean", "BO2_tempmax_bdmean",
+  "BO2_RCP85_2050_tempmean_bdmean", "BO2_RCP85_2050_tempmax_bdmean"
+  ),
+  equalarea = FALSE, datadir = "biooracle")
+```
+These layers are then restricted to Europe and resampled to 0.5 degrees:
+```R
+eur_bo_t <- raster::resample(bo_t_dat, eur_r, method = "bilinear")
+```
+These can be plotted if desired:
+```R
+plot(eur_bo_t, col = RColorBrewer::brewer.pal(9, "Reds"))
+```
+The next step is to populate `eur_sf` with this temperature data. This requires getting the lon and lat of each gridsquare, which is done by adding a small amount to the SW corner coordinates to ensure the point is within the correct square, then extracting the relevant value from the temperature rasters for each grid cell, and finally adding these back into `eur_sf`:
+```R
+points <- eur_sf %>% st_set_geometry(NULL) %>% dplyr::select(lon, lat) %>%
+  mutate(lon = lon + 0.01, lat = lat + 0.01)
+points <- SpatialPoints(points, lonlatproj)
+
+bo_sst <- raster::extract(eur_bo_t[[1]], points)
+bo_sst_max <- raster::extract(eur_bo_t[[2]], points)
+bo_sst_rcp85_2050 <- raster::extract(eur_bo_t[[3]], points)
+bo_sst_max_rcp85_2050 <- raster::extract(eur_bo_t[[4]], points)
+bo_sbt <- raster::extract(eur_bo_t[[5]], points)
+bo_sbt_max <- raster::extract(eur_bo_t[[6]], points)
+bo_sbt_rcp85_2050 <- raster::extract(eur_bo_t[[7]], points)
+bo_sbt_max_rcp85_2050 <- raster::extract(eur_bo_t[[8]], points)
+
+eur_sf <- eur_sf %>% bind_cols(
+  bo_sst = bo_sst,
+  bo_sst_max = bo_sst_max,
+  bo_sst_rcp85_2050 = bo_sst_rcp85_2050,
+  bo_sst_max_rcp85_2050 = bo_sst_max_rcp85_2050,
+  bo_sbt = bo_sbt,
+  bo_sbt_max = bo_sbt_max,
+  bo_sbt_rcp85_2050 = bo_sbt_rcp85_2050,
+  bo_sbt_max_rcp85_2050 = bo_sbt_max_rcp85_2050)
+ ```
+# Creating maps
+Creating the maps requires loading a couple more packages:
+```R
+library(viridis)
+library(maps)
+```
+You can also create the European base map here (the plotting function will do this if not, but it may be quicker just to create it once rather than with each plot):
+```R
+eur_dat <- map_data("world") %>% filter(
+  long >= -45 & long <= 70 & lat >= 26 & lat <= 90)
+```
+
