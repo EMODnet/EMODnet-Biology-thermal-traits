@@ -2,12 +2,17 @@
 Deriving, summarising and visualising thermal affinities for European marine species
 # Overview
 The aim is to derive thermal affinities for all European marine species, by matching occurrence records from [OBIS](http://www.iobis.org) to gridded temperature products. These species-level thermal affinities are then used to produce assemblage-level averages on a 0.5º grid covering European seas, separately for major functional groups (e.g. benthos, zooplankton, fish). Finally these gridded assemblage-level averages are compared to current and projected future sea temperatures to identify areas of high climate vulnerability for each functional group.
-# R session info, required packages
+# R session info and packages
 ```R
-# Load required packages
-library(tidyverse)
-library(robis)
-library(worrms)
+#> R version 3.5.1 (2018-07-02)
+#> Platform: x86_64-apple-darwin15.6.0 (64-bit)
+#> Running under: macOS High Sierra 10.13.6
+```
+Load required packages
+```R
+library(tidyverse) # v1.2.1
+library(robis) # v1.0.1
+library(worrms) # v0.2.8
 ```
 # European species list
 The European species list was derived on the basis of occurrence records in [OBIS](iobis.org). Specifically, we used the `checklist` function in the [`robis`](https://github.com/iobis/robis) package to produce a summary of all species with occurrence records since 2000 within the European region (defined by the rectangle 45ºW–70ºE, 26ºN–90ºN, see http://www.eurobis.org/geo_scope), and limiting the results to taxa identified at the species level, as follows:
@@ -169,7 +174,7 @@ Thermal affinities were derived from all European marine species using a suite o
 ```R
 # load packages for parallel processing
 library(parallel)
-library(multidplyr)
+library(multidplyr) # v0.0.0.9000
 ```
 # Cluster management
 ```R
@@ -446,12 +451,10 @@ write_csv(all_species_fgrps_t_matched, "~/all_species_fgrps_t_matched.csv")
 # Assemblage-level thermal summaries and maps
 The next step is to derive gridded products for European seas. To do this, we set up a 0.5º grid, and for each cell extracted a list of species with recorded occurrences since 2000. These species were then matched to our thermal affinity database, allowing summaries of 'community thermal affinity' for each functional group in each grid cell. These summaries include, for example, mean thermal affinity for each temperature measure, across all species within a group occurring within a grid cell, weighted by the number of occurrences for each species within that cell.
 ```R
-# load packages
-library(raster)
-library(mregions)
-library(tidyverse)
-library(sf)
-library(robis)
+# load packages (in addition to those already loaded above)
+library(raster) # v2.6-7
+library(mregions) # v0.1.6
+library(sf) # v0.6-3
 ```
 Get a sensible base map of European seas, using FAO fishing regions
 ```R
@@ -577,7 +580,7 @@ t_affin_grid %>% ungroup %>% group_by(fg) %>% summarise(
 # Match gridded temperature affinities to current and future temperature
 The next step is to compare the gridded, functional group-level temperature affinities to current and projected future temperature. To do this we use [`sdmpredictors`](https://github.com/lifewatch/sdmpredictors) to access current and future temperature data from [Bio-ORACLE](http://www.bio-oracle.org). First, load `sdmpredictors` and download required temperature layers to a sensible directory (here, a folder called `biooracle` is created within your current working directory):
 ```R
-library(sdmpredictors)
+library(sdmpredictors) # v0.2.6
 # set path to store layers
 bo_path <- paste0(file.path(getwd()), "/biooracle")
 # create directory if needed
@@ -631,8 +634,8 @@ eur_sf <- eur_sf %>% bind_cols(
 # Creating maps
 Creating the maps requires loading a couple more packages:
 ```R
-library(viridis)
-library(maps)
+library(viridis) # v0.5.1
+library(maps) # v3.3.0
 ```
 You can also create the European base map here (the plotting function will do this if not, but it may be quicker just to create it once rather than with each plot):
 ```R
