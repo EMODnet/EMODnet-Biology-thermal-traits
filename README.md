@@ -639,15 +639,16 @@ You can also create the European base map here (the plotting function will do th
 eur_dat <- map_data("world") %>% filter(
   long >= -45 & long <= 70 & lat >= 26 & lat <= 90)
 ```
-You can then create maps using the `do_gridded_t_affin_plot` function provided in the `R` folder here. This allows you to plot a single variable for a specified functional group - for instance to plot the temperature affinity of benthos, derived using mean sea bottom temperature:
+You can then create maps using the `do_gridded_t_affin_plot` function provided in the `R` folder here. This allows you to plot a single variable for a specified functional group - for instance to map the temperature affinity of benthos, derived using mean sea bottom temperature:
 ```R
 do_gridded_t_affin_plot(fgrp = "benthos", tvar = "bo_sbt_mean", mapdat = eur_dat)
 ```
-Any combination of functional group and temperature variable available in `t_affin_grid` can be entered into the function. In addition, you can map the difference between functional group-level temperature affinity and one of the environmental temperature layers obtained from Bio-ORACLE. For instance to plot the difference between mean zooplankton thermal affinity based on mean SST, and expected max SST in 2050 under RCP 8.5:
+This map is found in `bo_sbt_mean benthos.png`. Any combination of functional group and temperature variable available in `t_affin_grid` can be entered into the function. In addition, you can map the difference between functional group-level temperature affinity and one of the environmental temperature layers obtained from Bio-ORACLE. For instance to plot the difference between mean zooplankton thermal affinity based on mean SST, and expected max SST in 2050 under RCP 8.5:
 ```R
 do_gridded_t_affin_plot(fgrp = "zooplankton", tvar = c("bo_sst_mean", "bo_sst_max_rcp85_2050"))
 ```
-You can also do some basic QC by plotting, for instance, number of species per grid square for a given group, to see if extreme temperature affinity values can be explained by a lack of data. For instance for phytoplankton:
+This produces the map in `bo_sst_mean-bo_sst_max_rcp85_2050 zooplankton.png`. You can also do some basic QC by plotting, for instance, number of species per grid square for a given group, to see if extreme temperature affinity values can be explained by a lack of data. For instance for phytoplankton:
 ```R
 do_gridded_t_affin_plot(fgrp = "phytoplankton", tvar = "n_sp", mapdat = eur_dat)
 ```
+which shows the low species richness throughout most of the region (see `n_sp phytoplankton.png`).
