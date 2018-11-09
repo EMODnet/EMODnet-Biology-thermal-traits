@@ -647,7 +647,7 @@ Any combination of functional group and temperature variable available in `t_aff
 ```R
 do_gridded_t_affin_plot(fgrp = "zooplankton", tvar = c("bo_sst_mean", "bo_sst_max_rcp85_2050"))
 ```
-You can also do some basic QC by plotting, for instance, number of species per grid square for a given group, for instance for phytoplankton:
+You can also do some basic QC by plotting, for instance, number of species per grid square for a given group, to see if extreme temperature affinity values can be explained by a lack of data. For instance for phytoplankton:
 ```R
 do_gridded_t_affin_plot(fgrp = "phytoplankton", tvar = "n_sp", mapdat = eur_dat)
 ```
