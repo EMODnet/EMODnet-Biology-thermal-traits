@@ -506,3 +506,25 @@ cell_checklist <- checklist(
   fields = c("species", "records", "worms_id", "rank_name")) %>%
   filter(rank_name == "Species")
 ```
+Now add back in the species-level thermal affinities - either using the object created above (renamed here for convenience):
+```R
+spp_t_matched <- all_species_fgrps_t_matched
+```
+Or you can read in this file directly from the csv provided here:
+```R
+spp_t_matched <- read_csv("all_species_fgrps_t_matched.csv")
+```
+Then check functional groups, combine some (e.g. all sub-categories of benthos -> benthos), and filter out species with no functional group information, or poorly specified functional group:
+```R
+spp_t_matched %>% group_by(functional_group) %>% count()
+
+# combine benthic functional groups, and filter to remove unknown or poorly-specified groups:
+spp_t_matched <- spp_t_matched %>%
+  mutate(fg = case_when(
+    functional_group %in% c("benthos", "epibenthos", "macrobenthos", "hyperbenthos") ~ "benthos",
+    functional_group %in% c("macro", "meso", "neuston", "unknown", "plankton") ~ "NA",
+    TRUE ~ functional_group
+    )) %>%
+  filter(fg != "NA")
+```
+
