@@ -101,7 +101,7 @@ count(species_attr, adult)
 # 18    zooplankton  1414
 # 19           <NA>  3084
 ```
-Create an unknown Fg for adult species with FG
+Create an unknown Fg for adult species without a matched FG
 ```R
 species_attr$adult <- factor(species_attr$adult, levels = levels(addNA(species_attr$adult)),
   labels = c(levels(species_attr$adult), "unknown"), exclude = NULL)
