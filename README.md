@@ -1,7 +1,17 @@
 # EMODnet-thermal-traits
 Deriving, summarising and visualising thermal affinities for European marine species
 # Overview
-The aim is to derive thermal affinities for all European marine species, by matching occurrence records from [OBIS](http://www.iobis.org) to gridded temperature products. These species-level thermal affinities are then used to produce assemblage-level averages on a 0.5º grid covering European seas, separately for major functional groups (e.g. benthos, zooplankton, fish). Finally these gridded assemblage-level averages are compared to current and projected future sea temperatures to identify areas of high climate vulnerability for each functional group.
+The aim is to derive thermal affinities for all European marine species, by matching occurrence records from [OBIS](http://www.iobis.org) to gridded temperature products. These species-level thermal affinities are then used to produce assemblage-level averages on a 0.5º grid covering European seas, separately for major functional groups (e.g. benthos, zooplankton, fish). Finally these gridded assemblage-level averages are compared to current and projected future sea temperatures to identify areas of high climate vulnerability for each functional group. 
+# Useful Shortcuts
+The code below explains how the European species list is generated, how functional groups are added, and how each species occurrence is matched to tmeperature data allowing a species-level thermal affinity to be calculated. There are two useful shortcuts that avoid you having to run all of this code. First, you can directly read in the species-level temperature-matched data:
+```R
+all_species_fgrps_t_matched <- read_csv("all_species_fgrps_t_matched.csv")
+```
+In this dataset, each row is a unique valid European marine species, matched to functional group, and with a range of temperature summaries caculated over all occurrence records available for this species in OBIS. After loading this dataset, you can skip straight to  [Assemblage-level thermal summaries and maps](#assemblage-level-thermal-summaries-and-maps). Alternatively you can read in the gridded, assemblage-level data as:
+```R
+t_affin_grid <- read_csv("t_affin_by_grid_fg.csv")
+```
+Here, data is summarised by 0.5º grid cell, and for each cell there are temperature summaries, by functional group, of the species present in that cell. With this dataset loaded you can progress directly to [Match gridded temperature affinities to current and future temperature](#match-gridded-temperature-affinities-to-current-and-future-temperature).
 # R session info and packages
 ```R
 #> R version 3.5.1 (2018-07-02)
