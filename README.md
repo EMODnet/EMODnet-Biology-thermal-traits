@@ -1,4 +1,4 @@
-# EMODnet-thermal-traits
+# EMODnet Biology thermal traits
 Deriving, summarising and visualising thermal affinities for European marine species
 # Overview
 The aim is to derive thermal affinities for all European marine species, by matching occurrence records from [OBIS](http://www.iobis.org) to gridded temperature products. These species-level thermal affinities are then used to produce assemblage-level averages on a 0.5º grid covering European seas, separately for major functional groups (e.g. benthos, zooplankton, fish). Finally these gridded assemblage-level averages are compared to current and projected future sea temperatures to identify areas of high climate vulnerability for each functional group. 
